@@ -5,7 +5,7 @@ import tkinter as tk
 import oci
 import tksheet
 
-from oci_python_scripts_grok.utils import get_oci_client, setup_logging, validate_input
+from utils import get_oci_client, setup_logging, validate_input
 
 
 def parse_args():

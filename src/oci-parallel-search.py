@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import oci
 
-from oci_python_scripts_grok.utils import get_oci_client, initialize_oci, setup_logging
+from utils import get_oci_client, initialize_oci, setup_logging
 
 
 def parse_args():

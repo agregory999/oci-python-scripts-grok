@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import oci
 from oci.pagination import list_call_get_all_results
 
-from oci_python_scripts_grok.utils import get_oci_client, initialize_oci, setup_logging
+from utils import get_oci_client, initialize_oci, setup_logging
 
 
 def parse_args():

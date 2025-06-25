@@ -3,7 +3,7 @@ import logging
 
 import oci
 
-from oci_python_scripts_grok.utils import (
+from utils import (
     connect_to_oci,
     get_oci_client,
     initialize_oci,
