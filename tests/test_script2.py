@@ -15,7 +15,7 @@ def processor(mocker):
             bg_color='white',
             verbose=False,
             config_file='~/.oci/config',
-            profile='NACEOCI01',
+            profile='DEFAULT',
         ),
     )
     processor = ReverseProcessor()

@@ -15,7 +15,7 @@ def processor(mocker):
             font_size=12,
             verbose=False,
             config_file='~/.oci/config',
-            profile='NACEOCI01',
+            profile='DEFAULT',
         ),
     )
     processor = UpperCaseProcessor()
