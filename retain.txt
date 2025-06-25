@@ -1,0 +1,5 @@
+        response = identity_client.get_compartment(config.get("tenancy"))
+        if response is None or response.data is None:
+            raise ValueError("Failed to retrieve user information from OCI")
+        comp: oci.identity.models.Compartment = response.data
+        logger.info(f"Connected to tenancy: {comp.name}")
