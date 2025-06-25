@@ -13,10 +13,10 @@ def setup_logging(verbose: bool) -> logging.Logger:
     return logging.getLogger(__name__)
 
 
-def initialize_oci() -> tuple[
-    dict, oci.auth.signers.InstancePrincipalsSecurityTokenSigner | None
-]:
-    """Initialize OCI configuration, trying instance principal or config file."""
+def initialize_oci(
+    profile_name: str = 'DEFAULT',
+) -> tuple[dict, oci.auth.signers.InstancePrincipalsSecurityTokenSigner | None]:
+    """Initialize OCI configuration, trying instance principal or config file with specified profile."""
     logger = logging.getLogger(__name__)
     config = None
     signer = None
@@ -34,25 +34,27 @@ def initialize_oci() -> tuple[
                     f'OCI config file not found at {config_path}'
                 ) from err
             try:
-                config = oci.config.from_file(config_path, 'DEFAULT')
+                config = oci.config.from_file(config_path, profile_name)
                 oci.config.validate_config(config)
                 signer = None
-                logger.info('Initialized OCI with config file')
+                logger.info(
+                    f'Initialized OCI with config file, profile: {profile_name}'
+                )
             except oci.exceptions.InvalidConfig as config_err:
                 raise ValueError(
-                    f'Invalid OCI config at {config_path}: {str(config_err)}'
+                    f'Invalid OCI config at {config_path} for profile {profile_name}: {str(config_err)}'
                 ) from config_err
     else:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f'OCI config file not found at {config_path}')
         try:
-            config = oci.config.from_file(config_path, 'DEFAULT')
+            config = oci.config.from_file(config_path, profile_name)
             oci.config.validate_config(config)
             signer = None
-            logger.info('Initialized OCI with config file')
+            logger.info(f'Initialized OCI with config file, profile: {profile_name}')
         except oci.exceptions.InvalidConfig as config_err:
             raise ValueError(
-                f'Invalid OCI config at {config_path}: {str(config_err)}'
+                f'Invalid OCI config at {config_path} for profile {profile_name}: {str(config_err)}'
             ) from config_err
 
     return config, signer

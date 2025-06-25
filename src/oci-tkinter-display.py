@@ -28,6 +28,12 @@ def parse_args():
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='Enable verbose logging'
     )
+    parser.add_argument(
+        '-p',
+        '--profile',
+        default='DEFAULT',
+        help='OCI configuration profile name (default: DEFAULT)',
+    )
     return parser.parse_args()
 
 
@@ -73,7 +79,9 @@ def main():
     """Main function to run Tkinter GUI and display instances."""
     args = parse_args()
     logger = setup_logging(args.verbose)
-    logger.info(f'Initialized with background color {args.bg_color}')
+    logger.info(
+        f'Initialized with background color {args.bg_color} and profile {args.profile}'
+    )
 
     # Validate compartment ID
     if not validate_input(args.compartment_id):

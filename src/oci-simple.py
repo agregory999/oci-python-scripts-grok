@@ -26,6 +26,12 @@ def parse_args():
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='Enable verbose logging'
     )
+    parser.add_argument(
+        '-p',
+        '--profile',
+        default='DEFAULT',
+        help='OCI configuration profile name (default: DEFAULT)',
+    )
     return parser.parse_args()
 
 
@@ -61,7 +67,9 @@ def main():
     """Main function to list instances in a compartment."""
     args = parse_args()
     logger = setup_logging(args.verbose)
-    logger.info(f'Processing compartment: {args.compartment_id}')
+    logger.info(
+        f'Processing compartment: {args.compartment_id} with profile: {args.profile}'
+    )
 
     # Validate compartment ID
     if not validate_input(args.compartment_id):
@@ -69,7 +77,7 @@ def main():
         raise ValueError('Invalid compartment ID')
 
     # Verify OCI connection
-    config, signer = initialize_oci()
+    config, signer = initialize_oci(args.profile)
     if not connect_to_oci(config, signer):
         raise ConnectionError('OCI connection failed')
 

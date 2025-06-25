@@ -22,6 +22,12 @@ def parse_args():
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='Enable verbose logging'
     )
+    parser.add_argument(
+        '-p',
+        '--profile',
+        default='DEFAULT',
+        help='OCI configuration profile name (default: DEFAULT)',
+    )
     return parser.parse_args()
 
 
@@ -61,13 +67,16 @@ def main():
     """Main function to search for running instances and process them in parallel."""
     args = parse_args()
     setup_logging(args.verbose)
+    logger = logging.getLogger(__name__)
+    logger.info(f'Using profile: {args.profile}')
 
     # Get tenancy ID from config or signer
-    config, signer = initialize_oci()
+    config, signer = initialize_oci(args.profile)
     tenancy_id = signer.tenancy_id if signer else config.get('tenancy')
     if not tenancy_id:
-        raise ValueError('Tenancy ID not found in OCI configuration or signer')
-    logging.getLogger(__name__).debug(f'Using tenancy ID: {tenancy_id}')
+        logger.error('Tenancy ID not found in configuration or signer')
+        raise RuntimeError('Tenancy ID not found in configuration or signer')
+    logger.debug(f'Using tenancy ID: {tenancy_id}')
 
     # Get OCI clients
     search_client = get_oci_client(oci.resource_search.ResourceSearchClient)
@@ -75,7 +84,7 @@ def main():
     identity_client = get_oci_client(oci.identity.IdentityClient)
 
     # Search for running instances
-    logging.getLogger(__name__).info('Searching for running compute instances')
+    logger.info('Searching for running compute instances')
     search_details = oci.resource_search.models.StructuredSearchDetails(
         query="query instance resources where lifeCycleState = 'RUNNING'",
         type='Structured',
@@ -83,10 +92,10 @@ def main():
     )
     response = search_client.search_resources(search_details)
     if response is None or response.data is None:
-        logging.getLogger(__name__).error('No search results returned')
+        logger.error('No search results returned')
         raise RuntimeError('Failed to search for instances')
     resources = response.data.items
-    logging.getLogger(__name__).info(f'Found {len(resources)} running instances')
+    logger.info(f'Found {len(resources)} running instances')
 
     # Process resources in parallel
     results = []
@@ -105,12 +114,12 @@ def main():
             try:
                 compartment_name, display_name, shape = future.result()
                 results.append((compartment_name, display_name, shape))
-                logging.getLogger(__name__).info(
+                logger.info(
                     f'Instance {display_name} in compartment {compartment_name}: Size {shape}'
                 )
             except Exception as err:
                 resource = future_to_resource[future]
-                logging.getLogger(__name__).error(
+                logger.error(
                     f'Error processing instance OCID {resource.identifier}: {str(err)}'
                 )
 

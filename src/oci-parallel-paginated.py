@@ -18,10 +18,16 @@ def parse_args():
         '--max-workers',
         type=int,
         default=4,
-        help='Maximum number of threads for parallel execution (default: 4)',
+        help='Maximum number of threads for execution in parallel (default: 4)',
     )
     parser.add_argument(
         '-v', '--verbose', action='store_true', help='Enable verbose logging'
+    )
+    parser.add_argument(
+        '-p',
+        '--profile',
+        default='DEFAULT',
+        help='OCI configuration profile name (default: DEFAULT)',
     )
     return parser.parse_args()
 
@@ -55,10 +61,10 @@ def main():
     setup_logging(args.verbose)
 
     # Get tenancy ID from config or signer
-    config, signer = initialize_oci()
+    config, signer = initialize_oci(args.profile)
     tenancy_id = signer.tenancy_id if signer else config.get('tenancy')
     if not tenancy_id:
-        raise ValueError('Tenancy ID not found in OCI configuration or signer')
+        raise ValueError('Tenancy ID not found in configuration or signer')
     logging.getLogger(__name__).debug(f'Using tenancy ID: {tenancy_id}')
 
     # Get OCI clients

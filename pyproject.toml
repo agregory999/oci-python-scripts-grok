@@ -1,7 +1,7 @@
 [project]
 name = "oci-python-scripts-grok"
 version = "0.1.0"
-description = "A Python project with OCI, Tkinter, tksheet, argparse, and multiple scripts"
+description = "A simplified Python project with OCI, Tkinter, tksheet, and argparse"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
